@@ -15,6 +15,17 @@ class StorageService {
   static const String keyReceiptHeader = 'bien_pos_receipt_header';
   static const String keyReceiptCashier = 'bien_pos_receipt_cashier';
   static const String keyReceiptFooter = 'bien_pos_receipt_footer';
+  static const String keyLanguage = 'bien_pos_language';
+
+  static Future<void> saveLanguage(String langCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(keyLanguage, langCode);
+  }
+
+  static Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(keyLanguage) ?? 'id';
+  }
 
   static Future<void> saveCashierName(String cashierName) async {
     final prefs = await SharedPreferences.getInstance();
@@ -35,7 +46,7 @@ class StorageService {
   static Future<Map<String, String>> getReceiptSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final header = prefs.getString(keyReceiptHeader) ??
-        'BIEN POS RESTO\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890';
+        'BIEN POS\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890';
     final cashierName = prefs.getString(keyReceiptCashier) ?? 'bien';
     final footer = prefs.getString(keyReceiptFooter) ??
         '--- Terima Kasih atas Kunjungan Anda ---';
@@ -64,7 +75,8 @@ class StorageService {
     }
   }
 
-  static Future<void> saveTransactions(List<PosTransaction> transactions) async {
+  static Future<void> saveTransactions(
+      List<PosTransaction> transactions) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = transactions.map((t) => t.toJson()).toList();
     await prefs.setString(keyTransactions, jsonEncode(jsonList));

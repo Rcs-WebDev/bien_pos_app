@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/pos_provider.dart';
+import '../providers/language_provider.dart';
 import '../services/storage_service.dart';
 import 'login_screen.dart';
 
@@ -46,10 +47,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final posProvider = Provider.of<PosProvider>(context, listen: false);
+    final langProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pengaturan Sistem POS', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(langProvider.tr('settings_title'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
@@ -61,25 +64,150 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // Profile Card
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.indigo.shade100,
                       child: const Icon(Icons.person, color: Colors.indigo),
                     ),
-                    title: Text(authProvider.currentUserName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Peran: ${authProvider.currentRole}'),
+                    title: Text(authProvider.currentUserName,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text('${langProvider.tr('role')}: ${authProvider.currentRole}'),
                     trailing: ElevatedButton.icon(
                       icon: const Icon(Icons.logout, size: 16),
-                      label: const Text('Keluar'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade50, foregroundColor: Colors.red),
+                      label: Text(langProvider.tr('logout')),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade50,
+                          foregroundColor: Colors.red),
                       onPressed: () async {
                         await authProvider.logout();
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const LoginScreen()),
                         );
                       },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Language Switcher Card
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.language, color: Colors.indigo),
+                            const SizedBox(width: 8),
+                            Text(
+                              langProvider.tr('language_settings'),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          langProvider.tr('language_desc'),
+                          style: const TextStyle(color: Colors.black54, fontSize: 12),
+                        ),
+                        const Divider(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => langProvider.setLanguage('id'),
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: langProvider.isIndonesian
+                                        ? Colors.indigo.shade50
+                                        : Colors.grey.shade100,
+                                    border: Border.all(
+                                      color: langProvider.isIndonesian
+                                          ? Colors.indigo
+                                          : Colors.grey.shade300,
+                                      width: langProvider.isIndonesian ? 2 : 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        langProvider.tr('indonesian'),
+                                        style: TextStyle(
+                                          fontWeight: langProvider.isIndonesian
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color: langProvider.isIndonesian
+                                              ? Colors.indigo
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                      if (langProvider.isIndonesian) ...[
+                                        const SizedBox(width: 6),
+                                        const Icon(Icons.check_circle, size: 18, color: Colors.indigo),
+                                      ]
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => langProvider.setLanguage('en'),
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: langProvider.isEnglish
+                                        ? Colors.indigo.shade50
+                                        : Colors.grey.shade100,
+                                    border: Border.all(
+                                      color: langProvider.isEnglish
+                                          ? Colors.indigo
+                                          : Colors.grey.shade300,
+                                      width: langProvider.isEnglish ? 2 : 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        langProvider.tr('english'),
+                                        style: TextStyle(
+                                          fontWeight: langProvider.isEnglish
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color: langProvider.isEnglish
+                                              ? Colors.indigo
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                      if (langProvider.isEnglish) ...[
+                                        const SizedBox(width: 6),
+                                        const Icon(Icons.check_circle, size: 18, color: Colors.indigo),
+                                      ]
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -88,45 +216,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // Receipt Settings Card (Header, Cashier Name, Footer)
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.receipt_long, color: Colors.indigo),
-                            SizedBox(width: 8),
+                            const Icon(Icons.receipt_long, color: Colors.indigo),
+                            const SizedBox(width: 8),
                             Text(
-                              'Pengaturan Struk Kasir',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              langProvider.tr('receipt_settings'),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Atur informasi header, nama kasir default, dan footer yang akan tercetak pada struk.',
-                          style: TextStyle(color: Colors.black54, fontSize: 12),
+                        Text(
+                          langProvider.tr('receipt_settings_desc'),
+                          style: const TextStyle(color: Colors.black54, fontSize: 12),
                         ),
                         const Divider(height: 24),
 
                         // Header Struk Input
-                        const Text('Header Struk (Nama Toko & Alamat)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        Text(langProvider.tr('receipt_header'),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
                         const SizedBox(height: 6),
                         TextField(
                           controller: _headerController,
                           maxLines: 3,
                           decoration: InputDecoration(
-                            hintText: 'Contoh:\nBIEN POS RESTO\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            hintText:
+                                'Contoh:\nBIEN POS\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             contentPadding: const EdgeInsets.all(12),
                           ),
                         ),
                         const SizedBox(height: 16),
 
                         // Nama Kasir Input
-                        const Text('Nama Kasir Default', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        Text(langProvider.tr('cashier_default_name'),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
                         const SizedBox(height: 6),
                         TextField(
                           controller: _cashierController,
@@ -136,23 +272,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             }
                           },
                           decoration: InputDecoration(
-                            hintText: 'Masukkan nama kasir...',
-                            prefixIcon: const Icon(Icons.badge_outlined, size: 20),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            hintText: langProvider.tr('cashier_default_name'),
+                            prefixIcon:
+                                const Icon(Icons.badge_outlined, size: 20),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
                           ),
                         ),
                         const SizedBox(height: 16),
 
                         // Footer Struk Input
-                        const Text('Footer Struk (Pesan Terima Kasih)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        Text(langProvider.tr('receipt_footer'),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
                         const SizedBox(height: 6),
                         TextField(
                           controller: _footerController,
                           maxLines: 2,
                           decoration: InputDecoration(
-                            hintText: 'Contoh:\n--- Terima Kasih atas Kunjungan Anda ---',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            hintText:
+                                'Contoh:\n--- Terima Kasih atas Kunjungan Anda ---',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             contentPadding: const EdgeInsets.all(12),
                           ),
                         ),
@@ -163,12 +306,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.save, size: 18),
-                            label: const Text('SIMPAN PENGATURAN STRUK', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: Text(langProvider.tr('save_receipt_settings'),
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.indigo,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () async {
                               final header = _headerController.text.trim();
@@ -178,9 +323,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               await StorageService.saveReceiptSettings(
                                 header: header.isNotEmpty
                                     ? header
-                                    : 'BIEN POS RESTO\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890',
-                                cashierName: cashier.isNotEmpty ? cashier : 'bien',
-                                footer: footer.isNotEmpty ? footer : '--- Terima Kasih atas Kunjungan Anda ---',
+                                    : 'BIEN POS\nJl. Malioboro No. 45, Yogyakarta\nTelp: 0812-3456-7890',
+                                cashierName:
+                                    cashier.isNotEmpty ? cashier : 'bien',
+                                footer: footer.isNotEmpty
+                                    ? footer
+                                    : '--- Terima Kasih atas Kunjungan Anda ---',
                               );
 
                               if (cashier.isNotEmpty) {
@@ -188,8 +336,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               }
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Pengaturan struk & kasir berhasil disimpan!'),
+                                SnackBar(
+                                  content: Text(
+                                      langProvider.tr('settings_saved')),
                                   backgroundColor: Colors.teal,
                                 ),
                               );
@@ -204,11 +353,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 20),
                 // Info App Card
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: const ListTile(
-                    leading: Icon(Icons.info_outline, color: Colors.indigo),
-                    title: Text('Versi Aplikasi', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Bien POS Flutter Native v1.0.0 (Offline Mode)'),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: ListTile(
+                    leading: const Icon(Icons.info_outline, color: Colors.indigo),
+                    title: Text(langProvider.tr('app_version'),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle:
+                        const Text('Bien POS Flutter Native v1.0.0 (Offline Mode)'),
                   ),
                 ),
               ],

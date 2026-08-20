@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/pos_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
 
 void main() {
@@ -20,9 +21,10 @@ class BienPosApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => PosProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: MaterialApp(
-        title: 'Bien POS Resto',
+        title: 'Bien POS',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
