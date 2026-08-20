@@ -78,11 +78,12 @@ class Category {
       );
 
   String getLocalizedLabel(dynamic langProvider) {
-    if (id == 'all') return langProvider.tr('cat_all_short');
-    if (id == 1) return langProvider.tr('cat_food');
-    if (id == 2) return langProvider.tr('cat_drink');
-    if (id == 3) return langProvider.tr('cat_snack');
-    if (id == 4) return langProvider.tr('cat_combo');
+    final idStr = id.toString();
+    if (idStr == 'all') return langProvider.tr('cat_all_short');
+    if (idStr == '1') return langProvider.tr('cat_food');
+    if (idStr == '2') return langProvider.tr('cat_drink');
+    if (idStr == '3') return langProvider.tr('cat_snack');
+    if (idStr == '4') return langProvider.tr('cat_combo');
     return label;
   }
 }
