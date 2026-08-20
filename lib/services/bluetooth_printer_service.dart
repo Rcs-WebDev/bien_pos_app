@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../models/transaction_model.dart';
+import '../providers/language_provider.dart';
 
 class BluetoothPrinterService {
   static final BluetoothPrinterService _instance = BluetoothPrinterService._internal();
@@ -62,29 +64,31 @@ class BluetoothPrinterService {
     required String footerText,
     int copyCount = 1,
   }) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.bluetooth_searching, color: Colors.indigo),
-            SizedBox(width: 8),
-            Text('Sambungkan Printer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Icon(Icons.bluetooth_searching, color: Colors.indigo),
+            const SizedBox(width: 8),
+            Text(langProvider.tr('connect_printer_title'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
-        content: const Text(
-          'Silakan buka Pengaturan Bluetooth HP Anda untuk menyalakan Bluetooth & memasangkan (pairing) printer thermal.',
-          style: TextStyle(fontSize: 14),
+        content: Text(
+          langProvider.tr('connect_printer_desc'),
+          style: const TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+            child: Text(langProvider.tr('cancel')),
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.settings_bluetooth, size: 18),
-            label: const Text('Pasangkan di HP'),
+            label: Text(langProvider.tr('pair_on_phone')),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.indigo,
               foregroundColor: Colors.white,
@@ -101,18 +105,18 @@ class BluetoothPrinterService {
                   _directPrint(context, transaction, copyCount: copyCount);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Row(
                         children: [
-                          Icon(Icons.warning_amber_rounded, color: Colors.white),
-                          SizedBox(width: 10),
+                          const Icon(Icons.warning_amber_rounded, color: Colors.white),
+                          const SizedBox(width: 10),
                           Expanded(
-                            child: Text('Gagal terhubung ke Printer Bluetooth. Pastikan Bluetooth aktif & printer terpasang.'),
+                            child: Text(langProvider.tr('printer_connect_failed')),
                           ),
                         ],
                       ),
                       backgroundColor: Colors.redAccent,
-                      duration: Duration(seconds: 4),
+                      duration: const Duration(seconds: 4),
                     ),
                   );
                 }
@@ -126,7 +130,14 @@ class BluetoothPrinterService {
 
   /// Direct print job execution to Bluetooth printer
   void _directPrint(BuildContext context, PosTransaction transaction, {int copyCount = 1}) {
-    final copyText = copyCount > 1 ? '$copyCount Copy Struk' : '1 Copy Struk';
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final copyText = copyCount > 1
+        ? langProvider.tr('print_copy', args: {'count': copyCount.toString()})
+        : langProvider.tr('print_receipt');
+    final txNo = transaction.transactionNo.length > 12
+        ? '${transaction.transactionNo.substring(0, 12)}...'
+        : transaction.transactionNo;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -135,7 +146,7 @@ class BluetoothPrinterService {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Mengirim perintah cetak ($copyText) ke Printer Bluetooth... (Struk #${transaction.transactionNo.length > 12 ? transaction.transactionNo.substring(0, 12) + "..." : transaction.transactionNo})',
+                langProvider.tr('sending_print_job', args: {'copyText': copyText, 'no': txNo}),
               ),
             ),
           ],

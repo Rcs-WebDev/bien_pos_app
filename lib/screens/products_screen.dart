@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/product_provider.dart';
+import '../providers/language_provider.dart';
 import '../models/product.dart';
 
 class ProductsScreen extends StatelessWidget {
@@ -10,19 +11,20 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manajemen Produk & Stok', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(langProvider.tr('products_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline, color: Colors.indigo, size: 26),
-            onPressed: () => _showAddProductDialog(context),
-            tooltip: 'Tambah Produk Baru',
+            onPressed: () => _showAddProductDialog(context, langProvider),
+            tooltip: langProvider.tr('add_product'),
           )
         ],
       ),
@@ -33,7 +35,7 @@ class ProductsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Cari Produk / SKU...',
+                hintText: langProvider.tr('search_product_sku_hint'),
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -77,7 +79,7 @@ class ProductsScreen extends StatelessWidget {
                   ),
                   title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                    'SKU: ${product.sku} | Varian: ${product.variant}\nHarga: ${currencyFormatter.format(product.sellPrice)} | Modal: ${currencyFormatter.format(product.costPrice)}',
+                    '${langProvider.tr("sku")}: ${product.sku} | ${langProvider.tr("variant")}: ${product.variant}\n${langProvider.tr("price")}: ${currencyFormatter.format(product.sellPrice)} | ${langProvider.tr("cost")}: ${currencyFormatter.format(product.costPrice)}',
                     style: const TextStyle(fontSize: 12),
                   ),
                   trailing: Row(
@@ -114,7 +116,7 @@ class ProductsScreen extends StatelessWidget {
 
                       // Stock Chip Button
                       InkWell(
-                        onTap: () => _showStockDialog(context, product),
+                        onTap: () => _showStockDialog(context, product, langProvider),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                           decoration: BoxDecoration(
@@ -123,7 +125,7 @@ class ProductsScreen extends StatelessWidget {
                             border: Border.all(color: Colors.indigo.shade200),
                           ),
                           child: Text(
-                            'Stok: ${product.stockQty}',
+                            '${langProvider.tr("stock")}: ${product.stockQty}',
                             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo, fontSize: 12),
                           ),
                         ),
@@ -133,8 +135,8 @@ class ProductsScreen extends StatelessWidget {
                       // Edit Product Button
                       IconButton(
                         icon: const Icon(Icons.edit_outlined, color: Colors.indigo, size: 20),
-                        onPressed: () => _showEditProductDialog(context, product),
-                        tooltip: 'Edit Detail & Foto Produk',
+                        onPressed: () => _showEditProductDialog(context, product, langProvider),
+                        tooltip: langProvider.tr('edit_product_tooltip'),
                         constraints: const BoxConstraints(),
                         padding: const EdgeInsets.all(4),
                       ),
@@ -142,8 +144,8 @@ class ProductsScreen extends StatelessWidget {
                       // Delete Product Button
                       IconButton(
                         icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                        onPressed: () => _showDeleteConfirmDialog(context, productProvider, product),
-                        tooltip: 'Hapus Produk',
+                        onPressed: () => _showDeleteConfirmDialog(context, productProvider, product, langProvider),
+                        tooltip: langProvider.tr('delete_product_tooltip'),
                         constraints: const BoxConstraints(),
                         padding: const EdgeInsets.all(4),
                       ),
@@ -158,54 +160,54 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 
-  void _showStockDialog(BuildContext context, Product product) {
+  void _showStockDialog(BuildContext context, Product product, LanguageProvider langProvider) {
     final controller = TextEditingController(text: product.stockQty.toString());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Penyesuaian Stok: ${product.name}'),
+        title: Text('${langProvider.tr("stock_adjustment_title")}: ${product.name}'),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Jumlah Stok Baru'),
+          decoration: InputDecoration(labelText: langProvider.tr('new_stock_qty')),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(langProvider.tr('cancel'))),
           ElevatedButton(
             onPressed: () {
               final newQty = int.tryParse(controller.text) ?? product.stockQty;
               Provider.of<ProductProvider>(context, listen: false).adjustStock(product.id, newQty);
               Navigator.pop(context);
             },
-            child: const Text('Simpan'),
+            child: Text(langProvider.tr('save')),
           )
         ],
       ),
     );
   }
 
-  void _showDeleteConfirmDialog(BuildContext context, ProductProvider provider, Product product) {
+  void _showDeleteConfirmDialog(BuildContext context, ProductProvider provider, Product product, LanguageProvider langProvider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Produk'),
-        content: Text('Apakah Anda yakin ingin menghapus "${product.name}"?'),
+        title: Text(langProvider.tr('delete_product')),
+        content: Text(langProvider.tr('confirm_delete', args: {'name': product.name})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(langProvider.tr('cancel'))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
             onPressed: () {
               provider.deleteProduct(product.id);
               Navigator.pop(context);
             },
-            child: const Text('Hapus'),
+            child: Text(langProvider.tr('delete')),
           ),
         ],
       ),
     );
   }
 
-  void _showAddProductDialog(BuildContext context) {
+  void _showAddProductDialog(BuildContext context, LanguageProvider langProvider) {
     final nameCtrl = TextEditingController();
     final variantCtrl = TextEditingController(text: 'Regular');
     final skuCtrl = TextEditingController(text: 'PROD-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}');
@@ -223,11 +225,11 @@ class ProductsScreen extends StatelessWidget {
         builder: (context, setState) {
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.add_box_outlined, color: Colors.indigo),
-                SizedBox(width: 8),
-                Text('Tambah Produk Baru', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Icon(Icons.add_box_outlined, color: Colors.indigo),
+                const SizedBox(width: 8),
+                Text(langProvider.tr('add_product'), style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
             content: SingleChildScrollView(
@@ -236,23 +238,23 @@ class ProductsScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Nama Produk')),
-                    TextField(controller: variantCtrl, decoration: const InputDecoration(labelText: 'Varian / Keterangan')),
+                    TextField(controller: nameCtrl, decoration: InputDecoration(labelText: langProvider.tr('product_name'))),
+                    TextField(controller: variantCtrl, decoration: InputDecoration(labelText: langProvider.tr('variant_desc'))),
                     Row(
                       children: [
-                        Expanded(child: TextField(controller: skuCtrl, decoration: const InputDecoration(labelText: 'SKU'))),
+                        Expanded(child: TextField(controller: skuCtrl, decoration: InputDecoration(labelText: langProvider.tr('sku')))),
                         const SizedBox(width: 8),
-                        Expanded(child: TextField(controller: unitCtrl, decoration: const InputDecoration(labelText: 'Satuan Unit'))),
+                        Expanded(child: TextField(controller: unitCtrl, decoration: InputDecoration(labelText: langProvider.tr('unit')))),
                       ],
                     ),
                     Row(
                       children: [
-                        Expanded(child: TextField(controller: costCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Harga Modal (Rp)'))),
+                        Expanded(child: TextField(controller: costCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: langProvider.tr('product_cost')))),
                         const SizedBox(width: 8),
-                        Expanded(child: TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Harga Jual (Rp)'))),
+                        Expanded(child: TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: langProvider.tr('product_price')))),
                       ],
                     ),
-                    TextField(controller: stockCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Stok Awal')),
+                    TextField(controller: stockCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: langProvider.tr('initial_stock'))),
                     const SizedBox(height: 12),
                     
                     // Image selector box
@@ -266,26 +268,26 @@ class ProductsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Foto Produk', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(langProvider.tr('product_photo'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                           const SizedBox(height: 6),
                           TextField(
                             controller: imageCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'URL Foto / Path File Perangkat',
-                              hintText: 'https://... atau /storage/emulated/0/...',
-                              prefixIcon: Icon(Icons.link, size: 20),
+                            decoration: InputDecoration(
+                              labelText: langProvider.tr('url_file_path'),
+                              hintText: langProvider.tr('photo_hint'),
+                              prefixIcon: const Icon(Icons.link, size: 20),
                             ),
                           ),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             icon: const Icon(Icons.file_upload_outlined, size: 16),
-                            label: const Text('Pilih dari Perangkat', style: TextStyle(fontSize: 12)),
+                            label: Text(langProvider.tr('select_from_device'), style: const TextStyle(fontSize: 12)),
                             style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo.shade50, foregroundColor: Colors.indigo),
                             onPressed: () {
                               imageCtrl.text = 'file:///sdcard/Download/produk_sample_${DateTime.now().millisecondsSinceEpoch % 1000}.jpg';
                               setState(() {});
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Foto dipilih dari galeri/perangkat')),
+                                SnackBar(content: Text(langProvider.tr('photo_selected_snack'))),
                               );
                             },
                           ),
@@ -297,7 +299,7 @@ class ProductsScreen extends StatelessWidget {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(langProvider.tr('cancel'))),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, foregroundColor: Colors.white),
                 onPressed: () {
@@ -323,7 +325,7 @@ class ProductsScreen extends StatelessWidget {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('TAMBAH PRODUK'),
+                child: Text(langProvider.tr('save_product')),
               ),
             ],
           );
@@ -332,7 +334,7 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 
-  void _showEditProductDialog(BuildContext context, Product product) {
+  void _showEditProductDialog(BuildContext context, Product product, LanguageProvider langProvider) {
     final nameCtrl = TextEditingController(text: product.name);
     final variantCtrl = TextEditingController(text: product.variant);
     final skuCtrl = TextEditingController(text: product.sku);
@@ -354,7 +356,7 @@ class ProductsScreen extends StatelessWidget {
                 const Icon(Icons.edit_note, color: Colors.indigo, size: 28),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text('Edit Produk: ${product.name}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text('${langProvider.tr("edit_product_tooltip")}: ${product.name}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ],
             ),
@@ -366,12 +368,12 @@ class ProductsScreen extends StatelessWidget {
                   children: [
                     TextField(
                       controller: nameCtrl,
-                      decoration: const InputDecoration(labelText: 'Nama Produk', border: OutlineInputBorder()),
+                      decoration: InputDecoration(labelText: langProvider.tr('product_name'), border: const OutlineInputBorder()),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: variantCtrl,
-                      decoration: const InputDecoration(labelText: 'Varian / Keterangan', border: OutlineInputBorder()),
+                      decoration: InputDecoration(labelText: langProvider.tr('variant_desc'), border: const OutlineInputBorder()),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -379,14 +381,14 @@ class ProductsScreen extends StatelessWidget {
                         Expanded(
                           child: TextField(
                             controller: skuCtrl,
-                            decoration: const InputDecoration(labelText: 'SKU', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('sku'), border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             controller: barcodeCtrl,
-                            decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('barcode'), border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -398,7 +400,7 @@ class ProductsScreen extends StatelessWidget {
                           child: TextField(
                             controller: costCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'Harga Modal (Rp)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('product_cost'), border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -406,7 +408,7 @@ class ProductsScreen extends StatelessWidget {
                           child: TextField(
                             controller: priceCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'Harga Jual (Rp)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('product_price'), border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -418,14 +420,14 @@ class ProductsScreen extends StatelessWidget {
                           child: TextField(
                             controller: stockCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'Jumlah Stok', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('product_stock'), border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             controller: unitCtrl,
-                            decoration: const InputDecoration(labelText: 'Satuan (Porsi/Gelas)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: langProvider.tr('unit_desc'), border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -443,22 +445,22 @@ class ProductsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.image, size: 18, color: Colors.indigo),
-                              SizedBox(width: 6),
-                              Text('Ganti Foto Produk dari Perangkat', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.indigo)),
+                              const Icon(Icons.image, size: 18, color: Colors.indigo),
+                              const SizedBox(width: 6),
+                              Text(langProvider.tr('change_photo_device'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.indigo)),
                             ],
                           ),
                           const SizedBox(height: 8),
                           TextField(
                             controller: imageCtrl,
                             onChanged: (_) => setState(() {}),
-                            decoration: const InputDecoration(
-                              labelText: 'URL / Path Foto Produk',
-                              hintText: 'Upload dari galeri atau tempel URL...',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: InputDecoration(
+                              labelText: langProvider.tr('url_file_path'),
+                              hintText: langProvider.tr('photo_hint'),
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -466,7 +468,7 @@ class ProductsScreen extends StatelessWidget {
                             children: [
                               ElevatedButton.icon(
                                 icon: const Icon(Icons.photo_library_outlined, size: 18),
-                                label: const Text('Upload dari Galeri / File'),
+                                label: Text(langProvider.tr('upload_gallery')),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.indigo,
                                   foregroundColor: Colors.white,
@@ -475,7 +477,7 @@ class ProductsScreen extends StatelessWidget {
                                   imageCtrl.text = 'file:///storage/emulated/0/DCIM/Camera/produk_${product.id}.jpg';
                                   setState(() {});
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Foto berhasil dipilih dari perangkat!')),
+                                    SnackBar(content: Text(langProvider.tr('photo_success_snack'))),
                                   );
                                 },
                               ),
@@ -491,11 +493,11 @@ class ProductsScreen extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Batal'),
+                child: Text(langProvider.tr('cancel')),
               ),
               ElevatedButton.icon(
                 icon: const Icon(Icons.save, size: 18),
-                label: const Text('SIMPAN PERUBAHAN', style: TextStyle(fontWeight: FontWeight.bold)),
+                label: Text(langProvider.tr('save_changes'), style: const TextStyle(fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,
                   foregroundColor: Colors.white,
@@ -519,7 +521,7 @@ class ProductsScreen extends StatelessWidget {
                     Provider.of<ProductProvider>(context, listen: false).updateProduct(product.id, updatedProduct);
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Detail produk "${updatedProduct.name}" berhasil diperbarui!')),
+                      SnackBar(content: Text(langProvider.tr('product_updated_snack', args: {'name': updatedProduct.name}))),
                     );
                   }
                 },

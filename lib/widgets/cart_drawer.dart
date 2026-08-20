@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/pos_provider.dart';
+import '../providers/language_provider.dart';
 import 'payment_dialog.dart';
 
 class CartDrawer extends StatelessWidget {
@@ -10,6 +11,7 @@ class CartDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final posProvider = Provider.of<PosProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Container(
@@ -37,7 +39,7 @@ class CartDrawer extends StatelessWidget {
                     const Icon(Icons.shopping_bag_outlined, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
-                      'Keranjang (${posProvider.totalItemsCount})',
+                      '${langProvider.tr("cart_title")} (${posProvider.totalItemsCount})',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -49,7 +51,7 @@ class CartDrawer extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.delete_sweep_outlined, color: Colors.redAccent),
                   onPressed: posProvider.cart.isEmpty ? null : posProvider.clearCart,
-                  tooltip: 'Kosongkan Keranjang',
+                  tooltip: langProvider.tr('clear_cart_tooltip'),
                 ),
               ],
             ),
@@ -61,7 +63,11 @@ class CartDrawer extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ['DINE-IN (1 Pax)', 'TAKEAWAY', 'ONLINE DELIVERY'].map((type) {
+                children: [
+                  langProvider.tr('order_type_dine_in'),
+                  langProvider.tr('order_type_takeaway'),
+                  langProvider.tr('order_type_online')
+                ].map((type) {
                   final isSelected = posProvider.orderType == type;
                   return Padding(
                     padding: const EdgeInsets.only(right: 6.0),
@@ -89,7 +95,7 @@ class CartDrawer extends StatelessWidget {
                         Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey.shade300),
                         const SizedBox(height: 12),
                         Text(
-                          'Keranjang masih kosong',
+                          langProvider.tr('cart_empty_title'),
                           style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                         ),
                       ],
@@ -178,7 +184,7 @@ class CartDrawer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Subtotal', style: TextStyle(color: Colors.black54)),
+                    Text(langProvider.tr('subtotal'), style: const TextStyle(color: Colors.black54)),
                     Text(currencyFormatter.format(posProvider.subtotalAmount), style: const TextStyle(fontWeight: FontWeight.w600)),
                   ],
                 ),
@@ -186,7 +192,7 @@ class CartDrawer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Bayar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(langProvider.tr('grand_total'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     Text(
                       currencyFormatter.format(posProvider.totalAmount),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.indigo),
@@ -212,12 +218,12 @@ class CartDrawer extends StatelessWidget {
                               builder: (context) => const PaymentDialog(),
                             );
                           },
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.point_of_sale),
-                        SizedBox(width: 8),
-                        Text('BAYAR SEKARANG', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        const Icon(Icons.point_of_sale),
+                        const SizedBox(width: 8),
+                        Text(langProvider.tr('checkout_btn'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       ],
                     ),
                   ),

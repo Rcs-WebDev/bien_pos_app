@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/pos_provider.dart';
+import '../providers/language_provider.dart';
 import '../widgets/receipt_dialog.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -17,8 +18,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   Widget build(BuildContext context) {
     final posProvider = Provider.of<PosProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-    final dateFormat = DateFormat('yyyy-MM-DD');
 
     final allTransactions = posProvider.transactionsHistory;
     final filteredTransactions = _selectedDate == null
@@ -32,7 +33,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat Transaksi Kasir', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(langProvider.tr('transactions_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
@@ -52,8 +53,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         icon: const Icon(Icons.calendar_month, color: Colors.indigo, size: 20),
                         label: Text(
                           _selectedDate == null
-                              ? 'Filter Per Tanggal: (Semua)'
-                              : 'Tanggal: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}',
+                              ? langProvider.tr('filter_by_date_all')
+                              : langProvider.tr('filter_date_selected', args: {'date': DateFormat('yyyy-MM-dd').format(_selectedDate!)}),
                           style: const TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
                         ),
                         style: OutlinedButton.styleFrom(
@@ -79,7 +80,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     if (_selectedDate != null) ...[
                       const SizedBox(width: 8),
                       IconButton(
-                        tooltip: 'Reset Filter Tanggal',
+                        tooltip: langProvider.tr('reset_date_filter'),
                         icon: const Icon(Icons.clear, color: Colors.red),
                         onPressed: () {
                           setState(() {
@@ -103,11 +104,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total: ${filteredTransactions.length} Transaksi',
+                        langProvider.tr('total_tx_count_fmt', args: {'count': filteredTransactions.length.toString()}),
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
                       ),
                       Text(
-                        'Omzet: ${currencyFormatter.format(totalOmzet)}',
+                        langProvider.tr('total_omzet_fmt', args: {'amount': currencyFormatter.format(totalOmzet)}),
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.indigo),
                       ),
                     ],
@@ -128,8 +129,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         const SizedBox(height: 12),
                         Text(
                           _selectedDate == null
-                              ? 'Belum ada riwayat transaksi'
-                              : 'Tidak ada transaksi pada tanggal ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}',
+                              ? langProvider.tr('no_transactions')
+                              : langProvider.tr('no_transactions_date', args: {'date': DateFormat('yyyy-MM-dd').format(_selectedDate!)}),
                           style: TextStyle(color: Colors.grey.shade500),
                         ),
                       ],
@@ -147,7 +148,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           child: const Icon(Icons.receipt, color: Colors.indigo),
                         ),
                         title: Text(tx.transactionNo, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        subtitle: Text('Kasir: ${tx.cashierName} | Tipe: ${tx.orderType}\nTanggal: ${tx.createdAt}'),
+                        subtitle: Text('${langProvider.tr("cashier")}: ${tx.cashierName} | ${langProvider.tr("type")}: ${tx.orderType}\n${langProvider.tr("date")}: ${tx.createdAt}'),
                         trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,

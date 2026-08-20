@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/pos_provider.dart';
 import '../providers/product_provider.dart';
+import '../providers/language_provider.dart';
 import 'receipt_dialog.dart';
 
 class PaymentDialog extends StatefulWidget {
@@ -26,6 +27,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Widget build(BuildContext context) {
     final posProvider = Provider.of<PosProvider>(context);
     final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return AlertDialog(
@@ -33,7 +35,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Pembayaran POS', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(langProvider.tr('payment_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.pop(context),
@@ -58,7 +60,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 ),
                 child: Column(
                   children: [
-                    const Text('TOTAL HARUS DIBAYAR', style: TextStyle(fontSize: 12, color: Colors.indigo)),
+                    Text(langProvider.tr('total_due_banner'), style: const TextStyle(fontSize: 12, color: Colors.indigo)),
                     const SizedBox(height: 4),
                     Text(
                       currencyFormatter.format(posProvider.totalAmount),
@@ -69,11 +71,11 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
 
               // Input Nama Customer
-              const Text('Nama Customer', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(langProvider.tr('customer_name'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'Masukkan nama customer (opsional)',
+                  hintText: langProvider.tr('customer_name_hint'),
                   prefixIcon: const Icon(Icons.person_outline, size: 20),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -82,7 +84,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
 
               const SizedBox(height: 16),
-              const Text('Metode Pembayaran', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(langProvider.tr('payment_method'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
               Row(
@@ -90,7 +92,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   Expanded(
                     child: ChoiceChip(
                       avatar: const Icon(Icons.money, size: 18),
-                      label: const Text('CASH'),
+                      label: Text(langProvider.tr('cash')),
                       selected: posProvider.selectedPaymentMethod == 'CASH',
                       onSelected: (selected) {
                         if (selected) posProvider.setPaymentMethod('CASH');
@@ -101,7 +103,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   Expanded(
                     child: ChoiceChip(
                       avatar: const Icon(Icons.qr_code, size: 18),
-                      label: const Text('QRIS BCA'),
+                      label: Text(langProvider.tr('qris_bca')),
                       selected: posProvider.selectedPaymentMethod == 'QRIS_BCA',
                       onSelected: (selected) {
                         if (selected) posProvider.setPaymentMethod('QRIS_BCA');
@@ -112,7 +114,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
 
               const SizedBox(height: 16),
-              const Text('Jumlah Uang Diterima (Rp)', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(langProvider.tr('amount_paid_rp'), style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
               TextField(
@@ -162,7 +164,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Uang Kembalian', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
+                    Text(langProvider.tr('change_due_label'), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
                     Text(
                       currencyFormatter.format(posProvider.changeAmount),
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal.shade800),
@@ -177,7 +179,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Batal'),
+          child: Text(langProvider.tr('cancel')),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -196,7 +198,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
               );
             }
           },
-          child: const Text('SELESAIKAN TRANSAKSI', style: TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(langProvider.tr('finish_transaction_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
       ],
     );

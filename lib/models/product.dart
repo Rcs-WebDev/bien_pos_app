@@ -76,4 +76,13 @@ class Category {
         name: json['name'] ?? '',
         label: json['label'] ?? json['name'] ?? '',
       );
+
+  String getLocalizedLabel(dynamic langProvider) {
+    if (id == 'all') return langProvider.tr('cat_all_short');
+    if (id == 1) return langProvider.tr('cat_food');
+    if (id == 2) return langProvider.tr('cat_drink');
+    if (id == 3) return langProvider.tr('cat_snack');
+    if (id == 4) return langProvider.tr('cat_combo');
+    return label;
+  }
 }

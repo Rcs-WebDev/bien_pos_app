@@ -24,7 +24,7 @@ class StorageService {
 
   static Future<String> getLanguage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(keyLanguage) ?? 'id';
+    return prefs.getString(keyLanguage) ?? 'en';
   }
 
   static Future<void> saveCashierName(String cashierName) async {

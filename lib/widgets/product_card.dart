@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/product.dart';
+import '../providers/language_provider.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -14,6 +16,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Card(
@@ -63,7 +66,7 @@ class ProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'Stok: ${product.stockQty}',
+                        '${langProvider.tr("stock")}: ${product.stockQty}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,

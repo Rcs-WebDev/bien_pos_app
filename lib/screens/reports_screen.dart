@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/pos_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/language_provider.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final posProvider = Provider.of<PosProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
     final dateFormat = DateFormat('yyyy-MM-dd');
 
@@ -66,17 +68,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Laporan & Analisis POS', style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(langProvider.tr('reports_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: Colors.white,
           foregroundColor: Colors.black87,
           elevation: 1,
-          bottom: const TabBar(
+          bottom: TabBar(
             labelColor: Colors.indigo,
             unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.indigo,
             tabs: [
-              Tab(icon: Icon(Icons.bar_chart), text: 'Laporan Shift & Metode'),
-              Tab(icon: Icon(Icons.show_chart), text: 'Ringkasan Laba Rugi (P&L)'),
+              Tab(icon: const Icon(Icons.bar_chart), text: langProvider.tr('tab_shift_method')),
+              Tab(icon: const Icon(Icons.show_chart), text: langProvider.tr('tab_pnl')),
             ],
           ),
         ),
@@ -95,8 +97,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _selectedReportDate == null
-                            ? 'Filter Tanggal: Semua Periode'
-                            : 'Filter Tanggal: ${dateFormat.format(_selectedReportDate!)}',
+                            ? langProvider.tr('filter_date_all_period')
+                            : langProvider.tr('filter_date_fmt', args: {'date': dateFormat.format(_selectedReportDate!)}),
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.indigo),
                       ),
                     ],
@@ -105,7 +107,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     children: [
                       OutlinedButton.icon(
                         icon: const Icon(Icons.filter_alt_outlined, size: 16),
-                        label: Text(_selectedReportDate == null ? 'Pilih Tanggal' : 'Ubah'),
+                        label: Text(_selectedReportDate == null ? langProvider.tr('select_date') : langProvider.tr('change_date')),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.indigo,
                           side: const BorderSide(color: Colors.indigo),
@@ -130,7 +132,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         const SizedBox(width: 6),
                         IconButton(
                           icon: const Icon(Icons.clear, color: Colors.red, size: 20),
-                          tooltip: 'Reset Filter Tanggal',
+                          tooltip: langProvider.tr('reset_date_filter'),
                           onPressed: () {
                             setState(() {
                               _selectedReportDate = null;
@@ -158,9 +160,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           children: [
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Omzet Penjualan',
+                                title: langProvider.tr('total_sales'),
                                 value: currencyFormatter.format(totalSales),
-                                subtitle: 'Keseluruhan metode',
+                                subtitle: langProvider.tr('all_methods_subtitle'),
                                 icon: Icons.monetization_on_outlined,
                                 color: Colors.teal,
                               ),
@@ -168,9 +170,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Transaksi',
-                                value: '$totalTxCount Transaksi',
-                                subtitle: 'Jumlah struk terbit',
+                                title: langProvider.tr('total_tx_count'),
+                                value: langProvider.tr('total_tx_count_fmt', args: {'count': totalTxCount.toString()}),
+                                subtitle: langProvider.tr('receipts_issued'),
                                 icon: Icons.receipt_long,
                                 color: Colors.indigo,
                               ),
@@ -184,9 +186,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           children: [
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Transaksi Cash',
+                                title: langProvider.tr('total_cash_sales'),
                                 value: currencyFormatter.format(totalCashSales),
-                                subtitle: '${cashTransactions.length} Transaksi Tunai',
+                                subtitle: langProvider.tr('cash_tx_subtitle', args: {'count': cashTransactions.length.toString()}),
                                 icon: Icons.money,
                                 color: Colors.green.shade700,
                               ),
@@ -194,9 +196,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Transaksi QRIS',
+                                title: langProvider.tr('total_qris_sales'),
                                 value: currencyFormatter.format(totalQrisSales),
-                                subtitle: '${qrisTransactions.length} Transaksi Non-Tunai',
+                                subtitle: langProvider.tr('qris_tx_subtitle', args: {'count': qrisTransactions.length.toString()}),
                                 icon: Icons.qr_code_2,
                                 color: Colors.deepOrange,
                               ),
@@ -210,9 +212,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           children: [
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Dine-In',
+                                title: langProvider.tr('total_dine_in'),
                                 value: currencyFormatter.format(totalDineInSales),
-                                subtitle: '${dineInTransactions.length} Pesanan Makan di Tempat',
+                                subtitle: langProvider.tr('dine_in_subtitle', args: {'count': dineInTransactions.length.toString()}),
                                 icon: Icons.restaurant,
                                 color: Colors.blue.shade700,
                               ),
@@ -220,9 +222,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: _buildSummaryCard(
-                                title: 'Total Takeaway',
+                                title: langProvider.tr('total_takeaway'),
                                 value: currencyFormatter.format(totalTakeawaySales),
-                                subtitle: '${takeawayTransactions.length} Pesanan Bawa Pulang',
+                                subtitle: langProvider.tr('takeaway_subtitle', args: {'count': takeawayTransactions.length.toString()}),
                                 icon: Icons.takeout_dining,
                                 color: Colors.purple.shade700,
                               ),
@@ -239,36 +241,36 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Column(
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Penutupan Shift Kasir', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                    SizedBox(height: 2),
-                                    Text('Rekap omzet, QRIS, & tunai shift ini', style: TextStyle(color: Colors.black54, fontSize: 12)),
+                                    Text(langProvider.tr('shift_closing'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    const SizedBox(height: 2),
+                                    Text(langProvider.tr('shift_closing_desc'), style: const TextStyle(color: Colors.black54, fontSize: 12)),
                                   ],
                                 ),
                                 ElevatedButton.icon(
                                   icon: const Icon(Icons.lock_clock),
-                                  label: const Text('Tutup Shift'),
+                                  label: Text(langProvider.tr('close_shift')),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.indigo,
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   ),
-                                  onPressed: () => _showShiftClosingDialog(context, posProvider),
+                                  onPressed: () => _showShiftClosingDialog(context, posProvider, langProvider),
                                 ),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Text('Riwayat Penutupan Shift', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(langProvider.tr('shift_history_title'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 12),
                         posProvider.shiftClosingsHistory.isEmpty
                             ? Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(24.0),
-                                  child: Text('Belum ada penutupan shift recorded', style: TextStyle(color: Colors.grey.shade500)),
+                                  child: Text(langProvider.tr('no_shift_closings'), style: TextStyle(color: Colors.grey.shade500)),
                                 ),
                               )
                             : ListView.separated(
@@ -285,7 +287,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                     ),
                                     title: Text('${closing.shiftNo} - ${closing.employeeName}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                     subtitle: Text(
-                                      'Omzet: ${currencyFormatter.format(closing.totalSales)} | Tunai: ${currencyFormatter.format(closing.cashSales)} | QRIS: ${currencyFormatter.format(closing.qrisSales)}\nWaktu: ${closing.createdAt}',
+                                      '${langProvider.tr("omzet_label")}: ${currencyFormatter.format(closing.totalSales)} | ${langProvider.tr("cash_label")}: ${currencyFormatter.format(closing.cashSales)} | ${langProvider.tr("qris_label")}: ${currencyFormatter.format(closing.qrisSales)}\n${langProvider.tr("time_label")}: ${closing.createdAt}',
                                       style: const TextStyle(fontSize: 12),
                                     ),
                                   );
@@ -309,50 +311,50 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Column(
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Laporan Ringkasan Laba Rugi',
-                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      langProvider.tr('pnl_report_title'),
+                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      '(Income Statement / P&L)',
-                                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                                      langProvider.tr('pnl_subtitle'),
+                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                                     ),
                                   ],
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.edit_note, color: Colors.indigo),
-                                  onPressed: () => _showEditPnlDialog(context),
+                                  onPressed: () => _showEditPnlDialog(context, langProvider),
                                 ),
                               ],
                             ),
                             const Divider(height: 24),
 
                             // 1. PENDAPATAN OPERASIONAL
-                            _buildPnlSectionTitle('1. PENDAPATAN OPERASIONAL'),
-                            _buildPnlRow('Penjualan Kotor Kasir POS', currencyFormatter.format(grossRevenue)),
-                            _buildPnlRow('Potongan Diskon Pesanan', '- ${currencyFormatter.format(totalDiscountPnl)}'),
+                            _buildPnlSectionTitle(langProvider.tr('pnl_sec1')),
+                            _buildPnlRow(langProvider.tr('pnl_gross_sales'), currencyFormatter.format(grossRevenue)),
+                            _buildPnlRow(langProvider.tr('pnl_discounts'), '- ${currencyFormatter.format(totalDiscountPnl)}'),
                             const SizedBox(height: 4),
-                            _buildPnlSubtotalRow('PENDAPATAN BERSIH (NET REVENUE)', currencyFormatter.format(netRevenue), Colors.blue.shade700),
+                            _buildPnlSubtotalRow(langProvider.tr('pnl_net_revenue'), currencyFormatter.format(netRevenue), Colors.blue.shade700),
 
                             const SizedBox(height: 16),
 
                             // 2. HARGA POKOK PENJUALAN (HPP / COGS)
-                            _buildPnlSectionTitle('2. HARGA POKOK PENJUALAN (HPP / COGS)'),
-                            _buildPnlRow('Biaya Bahan Baku Terpakai (${_cogsPercent.toInt()}%)', '- ${currencyFormatter.format(cogsAmount)}'),
+                            _buildPnlSectionTitle(langProvider.tr('pnl_sec2')),
+                            _buildPnlRow(langProvider.tr('pnl_raw_materials', args: {'percent': _cogsPercent.toInt().toString()}), '- ${currencyFormatter.format(cogsAmount)}'),
                             const SizedBox(height: 4),
-                            _buildPnlSubtotalRow('LABA KOTOR (GROSS PROFIT)', currencyFormatter.format(grossProfit), Colors.teal.shade700),
+                            _buildPnlSubtotalRow(langProvider.tr('pnl_gross_profit'), currencyFormatter.format(grossProfit), Colors.teal.shade700),
 
                             const SizedBox(height: 16),
 
                             // 3. BEBAN OPERASIONAL (OPEX)
-                            _buildPnlSectionTitle('3. BEBAN OPERASIONAL (OPEX)'),
-                            _buildPnlRow('Pengeluaran Kas Keluar (Petty Cash)', '- ${currencyFormatter.format(totalCashOut)}'),
-                            _buildPnlRow('Estimasi Gaji & Operasional', '- ${currencyFormatter.format(_opexEstimate)}'),
+                            _buildPnlSectionTitle(langProvider.tr('pnl_sec3')),
+                            _buildPnlRow(langProvider.tr('pnl_petty_cash'), '- ${currencyFormatter.format(totalCashOut)}'),
+                            _buildPnlRow(langProvider.tr('pnl_opex_est'), '- ${currencyFormatter.format(_opexEstimate)}'),
                             const SizedBox(height: 4),
-                            _buildPnlSubtotalRow('TOTAL BEBAN OPERASIONAL', '- ${currencyFormatter.format(totalOpex)}', Colors.orange.shade800),
+                            _buildPnlSubtotalRow(langProvider.tr('pnl_total_opex'), '- ${currencyFormatter.format(totalOpex)}', Colors.orange.shade800),
 
                             const SizedBox(height: 20),
 
@@ -371,7 +373,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'LABA / (RUGI) BERSIH RESTO\n(NET PROFIT)',
+                                    langProvider.tr('pnl_net_profit'),
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
@@ -479,38 +481,38 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  void _showEditPnlDialog(BuildContext context) {
+  void _showEditPnlDialog(BuildContext context, LanguageProvider langProvider) {
     final cogsCtrl = TextEditingController(text: _cogsPercent.toInt().toString());
     final opexCtrl = TextEditingController(text: _opexEstimate.toInt().toString());
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Pengaturan Parameter P&L'),
+        title: Text(langProvider.tr('pnl_settings_title')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: cogsCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Persentase Estimasi HPP / COGS (%)',
-                hintText: 'Misal: 45',
+              decoration: InputDecoration(
+                labelText: langProvider.tr('cogs_percent_label'),
+                hintText: langProvider.tr('cogs_percent_hint'),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: opexCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Estimasi Beban Operasional OPEX (Rp)',
-                hintText: 'Misal: 100000',
+              decoration: InputDecoration(
+                labelText: langProvider.tr('opex_est_label'),
+                hintText: langProvider.tr('opex_est_hint'),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(langProvider.tr('cancel'))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, foregroundColor: Colors.white),
             onPressed: () {
@@ -520,43 +522,43 @@ class _ReportsScreenState extends State<ReportsScreen> {
               });
               Navigator.pop(context);
             },
-            child: const Text('SIMPAN'),
+            child: Text(langProvider.tr('save')),
           ),
         ],
       ),
     );
   }
 
-  void _showShiftClosingDialog(BuildContext context, PosProvider posProvider) {
+  void _showShiftClosingDialog(BuildContext context, PosProvider posProvider, LanguageProvider langProvider) {
     final notesCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Konfirmasi Tutup Shift Kasir'),
+        title: Text(langProvider.tr('shift_close_confirm_title')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Kasir Aktif: ${posProvider.cashierName}'),
+            Text('${langProvider.tr("active_cashier_label")}: ${posProvider.cashierName}'),
             const SizedBox(height: 12),
             TextField(
               controller: notesCtrl,
-              decoration: const InputDecoration(labelText: 'Catatan Penutupan Shift (Opsional)'),
+              decoration: InputDecoration(labelText: langProvider.tr('shift_notes_label')),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(langProvider.tr('cancel'))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, foregroundColor: Colors.white),
             onPressed: () async {
               final closing = await posProvider.closeShift(notesCtrl.text.trim(), 0.0);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Shift ${closing.shiftNo} berhasil ditutup!')),
+                SnackBar(content: Text(langProvider.tr('shift_closed_snack', args: {'no': closing.shiftNo}))),
               );
             },
-            child: const Text('PROSES TUTUP SHIFT'),
+            child: Text(langProvider.tr('process_shift_close')),
           ),
         ],
       ),

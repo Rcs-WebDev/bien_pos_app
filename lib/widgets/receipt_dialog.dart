@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction_model.dart';
+import '../providers/language_provider.dart';
 import '../services/storage_service.dart';
 import '../services/bluetooth_printer_service.dart';
 
@@ -37,17 +39,18 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     final currencyFormatter =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.check_circle, color: Colors.teal, size: 28),
-          SizedBox(width: 8),
-          Text('Transaksi Sukses',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          const Icon(Icons.check_circle, color: Colors.teal, size: 28),
+          const SizedBox(width: 8),
+          Text(langProvider.tr('receipt_title'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
       content: _isLoading
@@ -93,10 +96,10 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Kasir: ${widget.transaction.cashierName}',
+                              Text('${langProvider.tr("cashier")}: ${widget.transaction.cashierName}',
                                   style: const TextStyle(fontSize: 11)),
                               Text(
-                                  'Customer: ${widget.transaction.customerName}',
+                                  '${langProvider.tr("customer")}: ${widget.transaction.customerName}',
                                   style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold)),
@@ -105,10 +108,10 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Tipe: ${widget.transaction.orderType}',
+                              Text('${langProvider.tr("type")}: ${widget.transaction.orderType}',
                                   style: const TextStyle(fontSize: 11)),
-                              const Text('Status: SUKSES',
-                                  style: TextStyle(
+                              Text(langProvider.tr('status_success'),
+                                  style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.teal)),
@@ -165,18 +168,18 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                  'Metode: ${widget.transaction.paymentMethod}',
+                                  '${langProvider.tr("payment_method")}: ${widget.transaction.paymentMethod}',
                                   style: const TextStyle(fontSize: 11)),
                               Text(
-                                  'Bayar: ${currencyFormatter.format(widget.transaction.tenderedAmount)}',
+                                  '${langProvider.tr("amount_paid_rp")}: ${currencyFormatter.format(widget.transaction.tenderedAmount)}',
                                   style: const TextStyle(fontSize: 11)),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Kembalian:',
-                                  style: TextStyle(
+                              Text('${langProvider.tr("change_due_label")}:',
+                                  style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold)),
                               Text(
@@ -214,12 +217,12 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.copy, size: 16, color: Colors.indigo),
-                              SizedBox(width: 6),
-                              Text('Jumlah Copy Struk:',
-                                  style: TextStyle(
+                              const Icon(Icons.copy, size: 16, color: Colors.indigo),
+                              const SizedBox(width: 6),
+                              Text(langProvider.tr('receipt_copy_count'),
+                                  style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold)),
                             ],
@@ -264,8 +267,9 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
       actions: [
         OutlinedButton.icon(
           icon: const Icon(Icons.print),
-          label:
-              Text(_copyCount > 1 ? 'Cetak ($_copyCount Copy)' : 'Cetak Struk'),
+          label: Text(_copyCount > 1
+              ? langProvider.tr('print_copy', args: {'count': _copyCount.toString()})
+              : langProvider.tr('print_receipt')),
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.indigo,
             side: const BorderSide(color: Colors.indigo),
@@ -286,7 +290,7 @@ class _ReceiptDialogState extends State<ReceiptDialog> {
             foregroundColor: Colors.white,
           ),
           onPressed: () => Navigator.pop(context),
-          child: const Text('TRANSAKSI BARU'),
+          child: Text(langProvider.tr('new_transaction')),
         ),
       ],
     );

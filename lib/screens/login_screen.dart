@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                             child: ChoiceChip(
                               avatar: const Icon(Icons.person, size: 18),
-                              label: const Text('Staff'),
+                              label: Text(langProvider.tr('staff')),
                               selected: _selectedRole == 'Staff',
                               onSelected: (selected) {
                                 if (selected)
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ChoiceChip(
                               avatar:
                                   const Icon(Icons.admin_panel_settings, size: 18),
-                              label: const Text('Manager'),
+                              label: Text(langProvider.tr('manager')),
                               selected: _selectedRole == 'Manager',
                               onSelected: (selected) {
                                 if (selected)
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: true,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          labelText: 'Password / PIN $_selectedRole',
+                          labelText: langProvider.tr('password_pin_role', args: {'role': _selectedRole == 'Manager' ? langProvider.tr('manager') : langProvider.tr('staff')}),
                           prefixIcon: const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12)),
@@ -144,8 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _selectedRole == 'Manager'
-                            ? 'Default PIN Manager: manager123'
-                            : 'Default PIN Staff: staff123',
+                            ? langProvider.tr('pin_hint_manager')
+                            : langProvider.tr('pin_hint_staff'),
                         style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                       ),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../providers/pos_provider.dart';
+import '../providers/language_provider.dart';
 import '../widgets/product_card.dart';
 import '../widgets/cart_drawer.dart';
 
@@ -12,6 +13,7 @@ class CashierScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
     final posProvider = Provider.of<PosProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final isTabletLandscape = MediaQuery.of(context).size.width >= 800;
 
     return Scaffold(
@@ -30,7 +32,7 @@ class CashierScreen extends StatelessWidget {
                     children: [
                       TextField(
                         decoration: InputDecoration(
-                          hintText: 'Cari Produk, SKU, atau Scan Barcode...',
+                          hintText: langProvider.tr('search_product_barcode_hint'),
                           prefixIcon: const Icon(Icons.search),
                           suffixIcon: const Icon(Icons.qr_code_scanner),
                           filled: true,
@@ -57,7 +59,7 @@ class CashierScreen extends StatelessWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: ChoiceChip(
-                                label: Text(cat.label),
+                                label: Text(cat.getLocalizedLabel(langProvider)),
                                 selected: isSelected,
                                 selectedColor: Colors.indigo,
                                 labelStyle: TextStyle(
@@ -88,7 +90,7 @@ class CashierScreen extends StatelessWidget {
                                   Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade300),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'Tidak ada produk ditemukan',
+                                    langProvider.tr('no_products_found'),
                                     style: TextStyle(color: Colors.grey.shade500),
                                   ),
                                 ],
@@ -132,7 +134,7 @@ class CashierScreen extends StatelessWidget {
               backgroundColor: Colors.indigo,
               icon: const Icon(Icons.shopping_cart, color: Colors.white),
               label: Text(
-                'Keranjang (${posProvider.totalItemsCount})',
+                '${langProvider.tr("cart_title")} (${posProvider.totalItemsCount})',
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               onPressed: () {
