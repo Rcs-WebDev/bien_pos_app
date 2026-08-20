@@ -4,6 +4,7 @@
 [![Dart](https://img.shields.io/badge/Dart-3.13.0-0175C2?logo=dart)](https://dart.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Web-brightgreen)](https://flutter.dev)
+[![Language](https://img.shields.io/badge/Language-English%20(Default)-indigo)](https://flutter.dev)
 
 A modern, feature-rich **Point of Sale (POS)** mobile and web application built with Flutter. Designed for retail stores, coffee shops, and small-to-medium businesses to handle daily sales transactions, product inventory, thermal receipt printing via Bluetooth, and comprehensive financial reports.
 
