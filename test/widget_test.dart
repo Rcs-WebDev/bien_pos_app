@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_pos_app/main.dart';
+import 'package:bien_pos_app/main.dart';
 
 void main() {
   testWidgets('BienPosApp smoke test', (WidgetTester tester) async {

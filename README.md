@@ -74,8 +74,8 @@ Ensure you have the following installed on your development machine:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/flutter_pos_app.git
-   cd flutter_pos_app
+   git clone https://github.com/Rcs-WebDev/bien_pos_app.git
+   cd bien_pos_app
    ```
 
 2. **Install Flutter packages**:
@@ -123,12 +123,12 @@ The static files will be generated in `build/web/`.
 This repository includes a GitHub Actions workflow `.github/workflows/deploy.yml`. When you push to the `main` branch, it automatically builds the Flutter Web application and deploys it to **GitHub Pages**.
 
 1. Go to your repository **Settings** -> **Pages**.
-2. Set **Source** to **GitHub Actions**.
+2. Set **Source** to **Deploy from a branch** (select `gh-pages` branch) or **GitHub Actions**.
 3. Push changes to `main`:
    ```bash
    git push origin main
    ```
-4. Access your live web demo at: `https://YOUR_USERNAME.github.io/flutter_pos_app/`
+4. Access your live web demo at: `https://Rcs-WebDev.github.io/bien_pos_app/`
 
 ---
 

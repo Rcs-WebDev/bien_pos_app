@@ -1,11 +1,11 @@
 {
-    "name": "flutter_pos_app",
-    "short_name": "flutter_pos_app",
+    "name": "bien_pos_app",
+    "short_name": "bien_pos_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Bien POS - Modern Point of Sale Application",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
