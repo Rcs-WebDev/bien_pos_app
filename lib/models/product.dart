@@ -52,6 +52,58 @@ class Product {
         sellPrice: (json['sell_price'] as num?)?.toDouble() ?? 0.0,
         imageUrl: json['image_url'] ?? '',
       );
+
+  String getLocalizedName(dynamic langProvider) {
+    if (langProvider.isEnglish) {
+      switch (id) {
+        case 1:
+          return 'Spicy Meatball Soup';
+        case 2:
+          return 'Fried Chicken w/ Green Chili';
+        case 3:
+          return 'Special Fried Rice';
+        case 4:
+          return 'Palm Sugar Iced Coffee';
+        case 5:
+          return 'Sweet Iced Tea';
+        case 6:
+          return 'Chocolate Cheese Toast';
+        default:
+          return name;
+      }
+    }
+    return name;
+  }
+
+  String getLocalizedVariant(dynamic langProvider) {
+    if (langProvider.isEnglish) {
+      switch (id) {
+        case 1:
+          return 'Special Spicy Broth';
+        case 2:
+          return 'Breast / Thigh';
+        case 3:
+          return 'Complete Egg + Sausage';
+        case 4:
+          return 'Less Ice';
+        case 5:
+          return 'Cold';
+        case 6:
+          return 'Large Portion';
+        default:
+          return variant;
+      }
+    }
+    return variant;
+  }
+
+  String getLocalizedUnit(dynamic langProvider) {
+    if (langProvider.isEnglish) {
+      if (unit.toLowerCase() == 'porsi') return 'Portion';
+      if (unit.toLowerCase() == 'gelas') return 'Cup';
+    }
+    return unit;
+  }
 }
 
 class Category {

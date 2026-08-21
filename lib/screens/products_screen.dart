@@ -77,9 +77,9 @@ class ProductsScreen extends StatelessWidget {
                             child: const Icon(Icons.image, color: Colors.indigo),
                           ),
                   ),
-                  title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(product.getLocalizedName(langProvider), style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                    '${langProvider.tr("sku")}: ${product.sku} | ${langProvider.tr("variant")}: ${product.variant}\n${langProvider.tr("price")}: ${currencyFormatter.format(product.sellPrice)} | ${langProvider.tr("cost")}: ${currencyFormatter.format(product.costPrice)}',
+                    '${langProvider.tr("sku")}: ${product.sku} | ${langProvider.tr("variant")}: ${product.getLocalizedVariant(langProvider)}\n${langProvider.tr("price")}: ${currencyFormatter.format(product.sellPrice)} | ${langProvider.tr("cost")}: ${currencyFormatter.format(product.costPrice)}',
                     style: const TextStyle(fontSize: 12),
                   ),
                   trailing: Row(

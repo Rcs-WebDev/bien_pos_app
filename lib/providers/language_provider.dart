@@ -492,7 +492,4 @@ class LanguageProvider extends ChangeNotifier {
       'app_version': 'App Version',
     }
   };
-}p Version',
-    }
-  };
 }

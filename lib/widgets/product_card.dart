@@ -86,7 +86,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
+                    product.getLocalizedName(langProvider),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -96,7 +96,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    product.variant,
+                    product.getLocalizedVariant(langProvider),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
