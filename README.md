@@ -137,3 +137,5 @@ This repository includes a GitHub Actions workflow `.github/workflows/deploy.yml
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+*Last updated: 2026-08-21 - English Default & Product Localization Release.*
+
